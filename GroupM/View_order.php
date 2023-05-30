@@ -23,7 +23,6 @@ if (!in_array($order, $validOrders)) {
     $order = 'asc';
 }
 
-// Check if a row delete request is made
 if (isset($_GET['delete'])) {
     $deleteId = $_GET['delete'];
     $deleteSql = "DELETE FROM View_order WHERE ID = $deleteId";
@@ -34,7 +33,6 @@ if (isset($_GET['delete'])) {
     }
 }
 
-// Check if a row edit request is made
 if (isset($_POST['edit_row_id'])) {
     $editId = $_POST['edit_row_id'];
     $fullName = $_POST['full_name'];
@@ -43,7 +41,7 @@ if (isset($_POST['edit_row_id'])) {
     $address = $_POST['address'];
     $updateSql = "UPDATE View_order SET `Full name` = '$fullName', `Phone` = '$phone', `Email` = '$email', `Address` = '$address' WHERE ID = $editId";
     if ($conn->query($updateSql) === TRUE) {
-        echo "<meta http-equiv='refresh' content='0'>"; // Refresh the page to reflect the updated changes
+        echo "<meta http-equiv='refresh' content='0'>";
     } else {
         echo "Error updating row: " . $conn->error;
     }
@@ -79,6 +77,56 @@ $result = $conn->query($sql);
         .editing {
             background-color: #ffffcc;
         }
+
+        .button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        .button.delete {
+            background-color: #dc3545;
+        }
+
+        .button.delete:hover {
+            background-color: #c82333;
+        }
+
+        .button.edit {
+            background-color: #ffc107;
+        }
+
+        .button.edit:hover {
+            background-color: #e0a800;
+        }
+
+        .button.save, .button.cancel {
+            display: none;
+        }
+
+        .button.save {
+            background-color: #28a745;
+        }
+
+        .button.save:hover {
+            background-color: #218838;
+        }
+
+        .button.cancel {
+            background-color: #6c757d;
+        }
+
+        .button.cancel:hover {
+            background-color: #5a6268;
+        }
+
     </style>
 </head>
 <body>
@@ -128,10 +176,10 @@ $result = $conn->query($sql);
                         <td class='editable address'>" . $address . "</td>
                         <td>" . $row["Product"] . "</td>
                         <td>
-                            <a href='#' class='edit-btn'>Edit</a>
-                            <a href='view_order.php?delete=" . $row["ID"] . "'>Delete</a>
-                            <a href='#' class='save-btn'>Save</a>
-                            <a href='#' class='cancel-btn'>Cancel</a>
+                            <button class='button edit'>Edit</button>
+                            <button class='button delete' onClick='location.href=\"view_order.php?delete=" . $row["ID"] . "\"'>Delete</button>
+                            <button class='button save'>Save</button>
+                            <button class='button cancel'>Cancel</button>
                         </td>
                       </tr>";
             }
@@ -144,64 +192,37 @@ $result = $conn->query($sql);
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-            $("body").on("click", ".edit-btn", function() {
+            $(".edit").on("click", function() {
                 var row = $(this).closest("tr");
-                var fullName = row.find(".full-name").text();
-                var phone = row.find(".phone").text();
-                var email = row.find(".email").text();
-                var address = row.find(".address").text();
-
-                row.find(".edit-btn, .delete-btn").hide();
-                row.find(".save-btn, .cancel-btn").show();
+                row.find(".edit, .delete").hide();
+                row.find(".save, .cancel").show();
                 row.find(".editable").each(function() {
                     var input = $("<input type='text' class='edit-input'>");
                     input.val($(this).text());
                     $(this).html(input);
                 });
-
-                row.find(".full-name input").focus().val(fullName);
-                row.find(".phone input").val(phone);
-                row.find(".email input").val(email);
-                row.find(".address input").val(address);
             });
 
-            $("body").on("click", ".cancel-btn", function() {
-                var row = $(this).closest("tr");
-                row.find(".save-btn, .cancel-btn").hide();
-                row.find(".edit-btn, .delete-btn").show();
-                row.find(".editable").each(function() {
-                    $(this).text($(this).find("input").val());
-                });
+            $(".cancel").on("click", function() {
+                location.reload();
             });
 
-            $("body").on("click", ".save-btn", function() {
+            $(".save").on("click", function() {
                 var row = $(this).closest("tr");
-                var editRowId = row.find("td:first-child").text();
-                var fullName = row.find(".full-name input").val();
-                var phone = row.find(".phone input").val();
-                var email = row.find(".email input").val();
-                var address = row.find(".address input").val();
+                var id = row.find("td:first").text();
+                var fullName = row.find(".full-name .edit-input").val();
+                var phone = row.find(".phone .edit-input").val();
+                var email = row.find(".email .edit-input").val();
+                var address = row.find(".address .edit-input").val();
 
-                $.ajax({
-                    url: "view_order.php",
-                    type: "POST",
-                    data: {
-                        edit_row_id: editRowId,
-                        full_name: fullName,
-                        phone: phone,
-                        email: email,
-                        address: address
-                    },
-                    success: function() {
-                        location.reload(); // Refresh the page after saving the edit
-                    }
+                $.post("view_order.php", { edit_row_id: id, full_name: fullName, phone: phone, email: email, address: address }, function(data) {
+                    location.reload(); 
                 });
             });
         });
     </script>
 </body>
 </html>
-
 <?php
 $conn->close();
 ?>
