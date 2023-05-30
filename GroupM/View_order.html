@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Order Table</title>
+</head>
+<body>
+    <h2>View Order Table</h2>
+
+    <form action="view_order.php" method="GET">
+        <label for="sort">Sort By:</label>
+        <select name="sort" id="sort">
+            <option value="ID">ID</option>
+            <option value="Full name">Full Name</option>
+            <option value="Phone">Phone</option>
+            <option value="Email">Email</option>
+            <option value="Address">Address</option>
+            <option value="Product">Product</option>
+        </select>
+
+        <label for="order">Order:</label>
+        <select name="order" id="order">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+        </select>
+
+        <input type="submit" value="Sort">
+    </form>
+
+    <br>
+
+    <?php include('view_order.php'); ?>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Links to check database</h1>
+<p><a href="http://localhost/group/connect.php">Check connection</a></p>
+<p><a href="http://localhost/group/databasec.php">Create Databse</a></p>
+<p><a href="http://localhost/group/OrderInsert.php">Insert into View_order</a></p>
+<p><a href="http://localhost/group/adminInsert.php">Make new admin</a></p>
+<p><a href="http://localhost/group/ViewAdmin.php">View current admin databse</a></p>
+<p><a href="http://localhost/group/Vieworder.php">view ViewOrder database(raw)</a></p>
+<p><a href="http://localhost/group/Vieworder2.php">view ViewOrder database(autoSorted)</a></p>
+
+<p><a href="http://localhost/group/View_order.php">Final view with sorting capability</a></p>
+
+<p><a href="http://localhost/group/drop.php">delete Databse</a></p>
+
+
+</body>
+</html>
+
