@@ -43,7 +43,7 @@ if (isset($_POST['edit_row_id'])) {
     $address = $_POST['address'];
     $updateSql = "UPDATE View_order SET `Full name` = '$fullName', `Phone` = '$phone', `Email` = '$email', `Address` = '$address' WHERE ID = $editId";
     if ($conn->query($updateSql) === TRUE) {
-        // Edit saved successfully
+        echo "<meta http-equiv='refresh' content='0'>"; // Refresh the page to reflect the updated changes
     } else {
         echo "Error updating row: " . $conn->error;
     }
@@ -76,47 +76,8 @@ $result = $conn->query($sql);
             cursor: pointer;
         }
 
-        .edit-btn,
-        .save-btn,
-        .cancel-btn,
-        .delete-btn {
-            padding: 6px 12px;
-            margin-bottom: 0;
-            font-size: 14px;
-            font-weight: 400;
-            line-height: 1.42857143;
-            text-align: center;
-            white-space: nowrap;
-            vertical-align: middle;
-            cursor: pointer;
-            border: 1px solid transparent;
-            border-radius: 4px;
-        }
-
-        .edit-btn {
-            color: #fff;
-            background-color: #337ab7;
-            border-color: #2e6da4;
-        }
-
-        .save-btn {
-            color: #fff;
-            background-color: #5cb85c;
-            border-color: #4cae4c;
-            display: none;
-        }
-
-        .cancel-btn {
-            color: #fff;
-            background-color: #d9534f;
-            border-color: #d43f3a;
-            display: none;
-        }
-
-        .delete-btn {
-            color: #fff;
-            background-color: #c9302c;
-            border-color: #ac2925;
+        .editing {
+            background-color: #ffffcc;
         }
     </style>
 </head>
@@ -166,15 +127,12 @@ $result = $conn->query($sql);
                         <td class='editable email'>" . $row["Email"] . "</td>
                         <td class='editable address'>" . $address . "</td>
                         <td>" . $row["Product"] . "</td>
-                        <td>";
-                if (isset($_POST['edit_row_id']) && $_POST['edit_row_id'] == $row["ID"]) {
-                    echo "<button class='save-btn'>Save</button>
-                          <button class='cancel-btn'>Cancel</button>";
-                } else {
-                    echo "<button class='edit-btn'>Edit</button>
-                          <a href='view_order.php?delete=" . $row["ID"] . "' class='delete-btn'>Delete</a>";
-                }
-                echo "</td>
+                        <td>
+                            <a href='#' class='edit-btn'>Edit</a>
+                            <a href='view_order.php?delete=" . $row["ID"] . "'>Delete</a>
+                            <a href='#' class='save-btn'>Save</a>
+                            <a href='#' class='cancel-btn'>Cancel</a>
+                        </td>
                       </tr>";
             }
         } else {
@@ -188,27 +146,29 @@ $result = $conn->query($sql);
         $(document).ready(function() {
             $("body").on("click", ".edit-btn", function() {
                 var row = $(this).closest("tr");
+                var fullName = row.find(".full-name").text();
+                var phone = row.find(".phone").text();
+                var email = row.find(".email").text();
+                var address = row.find(".address").text();
 
-                if (row.hasClass("editing")) {
-                    return; // Don't proceed if already editing
-                }
-
-                row.addClass("editing");
-                row.find(".edit-btn").hide();
+                row.find(".edit-btn, .delete-btn").hide();
                 row.find(".save-btn, .cancel-btn").show();
                 row.find(".editable").each(function() {
                     var input = $("<input type='text' class='edit-input'>");
                     input.val($(this).text());
                     $(this).html(input);
                 });
+
+                row.find(".full-name input").focus().val(fullName);
+                row.find(".phone input").val(phone);
+                row.find(".email input").val(email);
+                row.find(".address input").val(address);
             });
 
             $("body").on("click", ".cancel-btn", function() {
                 var row = $(this).closest("tr");
-
-                row.removeClass("editing");
                 row.find(".save-btn, .cancel-btn").hide();
-                row.find(".edit-btn").show();
+                row.find(".edit-btn, .delete-btn").show();
                 row.find(".editable").each(function() {
                     $(this).text($(this).find("input").val());
                 });
@@ -233,8 +193,7 @@ $result = $conn->query($sql);
                         address: address
                     },
                     success: function() {
-                        // Refresh the page after saving the edit
-                        location.reload();
+                        location.reload(); // Refresh the page after saving the edit
                     }
                 });
             });
